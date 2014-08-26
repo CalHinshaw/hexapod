@@ -6,17 +6,17 @@ win = window.Window(700, 500, config=config, resizable=False)
 win.set_caption("2D IK Visualizer")
 
 RED   = (1, 0, 0, 1)
+BLUE  = (0, 0, 1, 1)
 WHITE = (0, 0, 0, 1)
 
 target = [20, 20]
 
-mid = (350, 250)
-actuator = [{"length": 100, "angle": 2},
+actuator = [{"length": 100, "angle": 2, "anchor": (350, 250)},
             {"length": 60, "angle": 2}]
 
 def draw_point(p, rad, color):
     gl.glPointSize(rad)
-    graphics.draw(1, gl.GL_POINTS, ('v2f', target), ('c4f', color))
+    graphics.draw(1, gl.GL_POINTS, ('v2f', p), ('c4f', color))
     
 
 def draw_line(b, e, rad=2):
@@ -24,13 +24,15 @@ def draw_line(b, e, rad=2):
     graphics.draw(2, gl.GL_LINES, ('v2f', b+e))
 
 def draw_actuator(actuator):
-    pos = list(mid)
+    pos = list(actuator[0]["anchor"])
     ang = 0
     for seg in actuator:
         ang += seg["angle"]
         new_pos = [pos[0]+seg["length"]*cos(ang), pos[1]+seg["length"]*sin(ang)]
         draw_line(pos, new_pos)
         pos = new_pos
+        
+    draw_point(actuator[0]["anchor"], 5, BLUE)
 
 
 @win.event
@@ -41,7 +43,6 @@ def on_draw():
     
     # Draw target
     draw_point(target, 5, RED)
-    
 
 
 @win.event
