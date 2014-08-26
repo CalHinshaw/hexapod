@@ -1,5 +1,6 @@
 from pyglet import window, gl, graphics, app
 from math import sin, cos
+import ik
 
 config = gl.Config(sample_buffers=1, samples=8)
 win = window.Window(700, 500, config=config, resizable=False)
@@ -11,8 +12,9 @@ WHITE = (0, 0, 0, 1)
 
 target = [20, 20]
 
-actuator = [{"length": 100, "angle": 2, "anchor": (350, 250)},
-            {"length": 60, "angle": 2}]
+actuator = [{"len": 100, "anchor": (350, 250)},
+            {"len": 60}]
+
 
 def draw_point(p, rad, color):
     gl.glPointSize(rad)
@@ -23,12 +25,14 @@ def draw_line(b, e, rad=2):
     gl.glLineWidth(rad)
     graphics.draw(2, gl.GL_LINES, ('v2f', b+e))
 
+
 def draw_actuator(actuator):
+    angles = ik.two_joint(actuator, target)
     pos = list(actuator[0]["anchor"])
     ang = 0
-    for seg in actuator:
-        ang += seg["angle"]
-        new_pos = [pos[0]+seg["length"]*cos(ang), pos[1]+seg["length"]*sin(ang)]
+    for seg, angle in zip(actuator, angles):
+        ang += angle
+        new_pos = [pos[0]+seg["len"]*cos(ang), pos[1]+seg["len"]*sin(ang)]
         draw_line(pos, new_pos)
         pos = new_pos
         
@@ -48,5 +52,11 @@ def on_draw():
 @win.event
 def on_mouse_press(x, y, button, modifiers):
     target[0], target[1] = x, y
+
+
+@win.event
+def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
+    target[0], target[1] = x, y
+
 
 app.run()
