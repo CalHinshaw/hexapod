@@ -10,15 +10,14 @@ RED   = (1, 0, 0, 1)
 BLUE  = (0, 0, 1, 1)
 WHITE = (0, 0, 0, 1)
 
-target = [20, 20]
-angle = 0
-
-actuator = [{"len": 100, "anchor": (350, 250)},
-            {"len": 60}]
+b_center = [20, 20]
+b_angle = 0
 
 robot = {"width": 100, "height": 200,
-         "actuators": [[{"len": 100, "anchor": (350, 250)}, {"len": 60, "mount": (0, 0)}],
-                       [{"len": 100, "anchor": (350, 250)}, {"len": 60, "mount": (100, 200)}]]}
+         "actuators": [[{"len": 100, "mount": (0, 0)}, {"len": 60}],
+                       [{"len": 100, "mount": (100, 200)}, {"len": 60}]]}
+
+targets = [(300, 200), (400, 300)]
 
 
 def draw_point(p, rad, color):
@@ -41,54 +40,47 @@ def draw_rect(w, h, center, angle):
          ik.rotate((l, b), angle, center))))
 
 
-def draw_actuator(actuator, angles):
-    pos = list(actuator[0]["anchor"])
+def draw_actuator(actuator, angles, target):
+    mount = ik.robot_to_world(b_center, b_angle, actuator[0]["mount"])
+    pos = list(mount)
     ang = 0
     for seg, angle in zip(actuator, angles):
         ang += angle
         new_pos = [pos[0]+seg["len"]*cos(ang), pos[1]+seg["len"]*sin(ang)]
         draw_line(pos, new_pos)
         pos = new_pos
-        
-    draw_point(actuator[0]["anchor"], 5, BLUE)
+    draw_point(mount, 5, BLUE)
+    draw_point(target, 5, RED)
 
 
-def draw_robot(robot, center, angle, angles):
-    # Draw the robot
-    draw_rect(robot["width"], robot["height"], center, angle)
-    for actuator, angles in zip(robot["actuators"], ik.position_body(center, angle, robot)):
-        draw_actuator(actuator, angles)
+def draw_robot(robot, b_center, b_angle, angles_list):
+    draw_rect(robot["width"], robot["height"], b_center, b_angle)
     
-    # for each actuator draw the actuators
+    for actuator, angles, target in zip(robot["actuators"], angles_list, targets):
+        draw_actuator(actuator, angles, target)
 
 
 @win.event
 def on_draw():
     win.clear()
     
-    #draw_actuator(actuator, ik.two_joint(actuator, target))
-    
-    draw_robot(robot, target, angle, ik.position_body(target, angle, robot))
-    
-    # Draw target
-    draw_point(target, 5, RED)
+    draw_robot(robot, b_center, b_angle, ik.position_body(b_center, b_angle, robot, targets))
 
 
 @win.event
 def on_mouse_press(x, y, button, modifiers):
-    target[0], target[1] = x, y
+    b_center[0], b_center[1] = x, y
 
 
 @win.event
 def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
-    target[0], target[1] = x, y
+    b_center[0], b_center[1] = x, y
     
 
 @win.event
 def on_mouse_scroll(x, y, scroll_x, scroll_y):
-    global angle
-    angle += scroll_y*0.05
-    print angle
+    global b_angle
+    b_angle += scroll_y*0.05
 
 
 app.run()
