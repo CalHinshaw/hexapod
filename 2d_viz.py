@@ -2,29 +2,34 @@ from pyglet import window, gl, graphics, app
 from math import sin, cos
 import ik
 
-RED   = (1, 0, 0, 1)
-BLUE  = (0, 0, 1, 1)
-WHITE = (0, 0, 0, 1)
+RED    = (1.0, 0.0, 0.0, 1.0)
+BLUE   = (0.0, 0.0, 1.0, 1.0)
+WHITE  = (1.0, 1.0, 1.0, 1.0)
+LTGREY = (0.5, 0.5, 0.5, 1.0)
 
 
 def draw_point(p, rad, color):
     gl.glPointSize(rad)
-    graphics.draw(1, gl.GL_POINTS, ('v2f', p), ('c4f', color))
+    gl.glColor4f(*color)
+    graphics.draw(1, gl.GL_POINTS, ('v2f', p))
     
 
-def draw_line(b, e, rad=2):
+def draw_line(b, e, rad=2, color = WHITE):
     gl.glLineWidth(rad)
+    gl.glColor4f(*color)
     graphics.draw(2, gl.GL_LINES, ('v2f', b+e))
     
 
-def draw_rect(w, h, center, angle):
+def draw_rect(w, h, center, angle, color = LTGREY):
     l, r = center[0]-w/2, center[0]+w/2
     b, t = center[1]-h/2, center[1]+h/2
-    graphics.draw(4, gl.GL_QUADS, ('v2f',
-        (ik.rotate((l, t), angle, center)+
-         ik.rotate((r, t), angle, center)+
-         ik.rotate((r, b), angle, center)+
-         ik.rotate((l, b), angle, center))))
+    gl.glColor4f(*color)
+    graphics.draw(4,
+                  gl.GL_QUADS,
+                  ('v2f', ik.rotate((l, t), angle, center)+
+                          ik.rotate((r, t), angle, center)+
+                          ik.rotate((r, b), angle, center)+
+                          ik.rotate((l, b), angle, center)))
 
 
 def draw_actuator(actuator, angles, target, bod_center, bod_angle):
