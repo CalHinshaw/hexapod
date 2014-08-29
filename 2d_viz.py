@@ -61,8 +61,8 @@ class VizWindow(window.Window):
         self.bod_angle = 0
         
         self.robot = {"width": 100, "height": 200,
-                      "actuators": [[{"len": 100, "mount": (0, 0)}, {"len": 60}],
-                                    [{"len": 100, "mount": (100, 200)}, {"len": 60}]]}
+                      "actuators": [[{"len": 100, "mount": (-50, -100)}, {"len": 60}],
+                                    [{"len": 100, "mount": (50, 100)}, {"len": 60}]]}
         
         self.targets = [(300, 200), (400, 300)]
         
