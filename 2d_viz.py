@@ -1,6 +1,6 @@
 from pyglet import window, gl, graphics, app
 from math import sin, cos
-import ik
+import cf_ik as ik
 import util
 
 RED    = (1.0, 0.0, 0.0, 1.0)
