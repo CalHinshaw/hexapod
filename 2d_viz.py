@@ -2,22 +2,9 @@ from pyglet import window, gl, graphics, app
 from math import sin, cos
 import ik
 
-config = gl.Config(sample_buffers=1, samples=8)
-win = window.Window(700, 500, config=config, resizable=False)
-win.set_caption("2D IK Visualizer")
-
 RED   = (1, 0, 0, 1)
 BLUE  = (0, 0, 1, 1)
 WHITE = (0, 0, 0, 1)
-
-b_center = [20, 20]
-b_angle = 0
-
-robot = {"width": 100, "height": 200,
-         "actuators": [[{"len": 100, "mount": (0, 0)}, {"len": 60}],
-                       [{"len": 100, "mount": (100, 200)}, {"len": 60}]]}
-
-targets = [(300, 200), (400, 300)]
 
 
 def draw_point(p, rad, color):
@@ -40,8 +27,8 @@ def draw_rect(w, h, center, angle):
          ik.rotate((l, b), angle, center))))
 
 
-def draw_actuator(actuator, angles, target):
-    mount = ik.robot_to_world(b_center, b_angle, actuator[0]["mount"])
+def draw_actuator(actuator, angles, target, bod_center, bod_angle):
+    mount = ik.robot_to_world(bod_center, bod_angle, actuator[0]["mount"])
     pos = list(mount)
     ang = 0
     for seg, angle in zip(actuator, angles):
@@ -53,34 +40,48 @@ def draw_actuator(actuator, angles, target):
     draw_point(target, 5, RED)
 
 
-def draw_robot(robot, b_center, b_angle, angles_list):
-    draw_rect(robot["width"], robot["height"], b_center, b_angle)
+def draw_robot(robot, bod_center, bod_angle, angle_list_list, targets):
+    draw_rect(robot["width"], robot["height"], bod_center, bod_angle)
     
-    for actuator, angles, target in zip(robot["actuators"], angles_list, targets):
-        draw_actuator(actuator, angles, target)
+    for actuator, angles, target in zip(robot["actuators"], angle_list_list, targets):
+        draw_actuator(actuator, angles, target, bod_center, bod_angle)
+
+class VizWindow(window.Window):
+    def __init__(self):
+        config = gl.Config(sample_buffers=1, samples=8)
+        super(VizWindow, self).__init__(700, 500, config=config, resizable=False)
+        self.set_caption("2D IK Visualizer")
+        
+        self.bod_center = [20, 20]
+        self.bod_angle = 0
+        
+        self.robot = {"width": 100, "height": 200,
+                      "actuators": [[{"len": 100, "mount": (0, 0)}, {"len": 60}],
+                                    [{"len": 100, "mount": (100, 200)}, {"len": 60}]]}
+        
+        self.targets = [(300, 200), (400, 300)]
+        
+        
+    def on_draw(self):
+        self.clear()
+        draw_robot(self.robot,
+                   self.bod_center,
+                   self.bod_angle,
+                   ik.position_body(self.bod_center, self.bod_angle, self.robot, self.targets),
+                   self.targets)
 
 
-@win.event
-def on_draw():
-    win.clear()
-    
-    draw_robot(robot, b_center, b_angle, ik.position_body(b_center, b_angle, robot, targets))
+    def on_mouse_press(self, x, y, button, modifiers):
+        self.bod_center[0], self.bod_center[1] = x, y
 
 
-@win.event
-def on_mouse_press(x, y, button, modifiers):
-    b_center[0], b_center[1] = x, y
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        self.bod_center[0], self.bod_center[1] = x, y
+        
+
+    def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
+        self.bod_angle += scroll_y*0.05
 
 
-@win.event
-def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
-    b_center[0], b_center[1] = x, y
-    
-
-@win.event
-def on_mouse_scroll(x, y, scroll_x, scroll_y):
-    global b_angle
-    b_angle += scroll_y*0.05
-
-
+window = VizWindow()
 app.run()
