@@ -3,6 +3,7 @@ from math import sin, cos
 import ik
 
 RED    = (1.0, 0.0, 0.0, 1.0)
+GREEN  = (0.0, 1.0, 0.0, 1.0)
 BLUE   = (0.0, 0.0, 1.0, 1.0)
 WHITE  = (1.0, 1.0, 1.0, 1.0)
 LTGREY = (0.5, 0.5, 0.5, 1.0)
@@ -50,6 +51,9 @@ def draw_robot(robot, bod_center, bod_angle, angle_list_list, targets):
     
     for actuator, angles, target in zip(robot["actuators"], angle_list_list, targets):
         draw_actuator(actuator, angles, target, bod_center, bod_angle)
+        
+    draw_point(bod_center, 10, GREEN)
+
 
 class VizWindow(window.Window):
     def __init__(self):
@@ -57,7 +61,7 @@ class VizWindow(window.Window):
         super(VizWindow, self).__init__(700, 500, config=config, resizable=False)
         self.set_caption("2D IK Visualizer")
         
-        self.bod_center = [20, 20]
+        self.bod_center = [350, 250]
         self.bod_angle = 0
         
         self.robot = {"width": 100, "height": 200,
