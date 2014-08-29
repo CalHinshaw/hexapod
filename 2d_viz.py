@@ -1,6 +1,7 @@
 from pyglet import window, gl, graphics, app
 from math import sin, cos
 import ik
+import util
 
 RED    = (1.0, 0.0, 0.0, 1.0)
 GREEN  = (0.0, 1.0, 0.0, 1.0)
@@ -27,10 +28,10 @@ def draw_rect(w, h, center, angle, color = LTGREY):
     gl.glColor4f(*color)
     graphics.draw(4,
                   gl.GL_QUADS,
-                  ('v2f', ik.rotate((l, t), angle, center)+
-                          ik.rotate((r, t), angle, center)+
-                          ik.rotate((r, b), angle, center)+
-                          ik.rotate((l, b), angle, center)))
+                  ('v2f', util.rotate((l, t), angle, center)+
+                          util.rotate((r, t), angle, center)+
+                          util.rotate((r, b), angle, center)+
+                          util.rotate((l, b), angle, center)))
 
 
 def draw_actuator(actuator, angles, target, bod_center, bod_angle):
