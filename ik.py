@@ -1,11 +1,14 @@
 from math import pi, sin, cos, asin, acos
 
+def sub(a, b):
+    return tuple(x-y for x,y in zip(a,b))
+
+
 def two_joint(act, target):
     """act is the actuator's specification
        target is the target position  for the last limb (index 1) in act"""
     l0, l1 = act[0]["len"], act[1]["len"]
-    mount = act[0]["mount"]
-    dx, dy = target[0]-mount[0], target[1]-mount[1]
+    dx, dy = target
     d = (dx**2 + dy**2)**0.5
     
     # Special cases for when we can't reach the target
@@ -19,7 +22,7 @@ def two_joint(act, target):
     
     # Accounting for the quadrants in a way that always keeps the joint
     # above the foot
-    return ((a0, pi-a0)[dx<0], (pi-a1, a1+pi)[dx > 0])
+    return ((a0, pi-a0)[dx<0], (pi-a1, a1+pi)[dx>=0])
 
 
 def position_body(center, angle, robot, targets):
@@ -28,7 +31,8 @@ def position_body(center, angle, robot, targets):
     robot spec."""
     angles = []
     for actuator, target in zip(robot["actuators"], targets):
-        angles.append(two_joint(actuator, target))
+        mount = robot_to_world(center, angle, actuator[0]["mount"])
+        angles.append(two_joint(actuator, sub(target, mount)))
     return angles
 
 

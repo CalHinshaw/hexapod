@@ -68,7 +68,7 @@ class VizWindow(window.Window):
                       "actuators": [[{"len": 100, "mount": (-50, -100)}, {"len": 60}],
                                     [{"len": 100, "mount": (50, 100)}, {"len": 60}]]}
         
-        self.targets = [(300, 200), (400, 300)]
+        self.targets = [(250, 200), (450, 300)]
         
         
     def on_draw(self):
