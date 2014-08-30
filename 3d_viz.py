@@ -38,7 +38,10 @@ def draw_gl_scene(x, y, z):
     glVertex3f(2, -1.0, 0.0)
     glEnd()
     
-
+    glBegin(GL_LINES)
+    glVertex3f(-1, 2, 0)
+    glVertex3f(-1, 0, 0)
+    glEnd()
     
     
 def resize_gl(w, h):
