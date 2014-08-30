@@ -18,13 +18,13 @@ def init_gl():				# We call this right after our OpenGL window is created.
         
 
 # The main drawing function.
-def draw_gl_scene():
+def draw_gl_scene(x, y, z):
     # Clear The Screen And The Depth Buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()					# Reset The View
 
-    # Move Left 1.5 units and into the screen 6.0 units.
-    glTranslatef(-1, 0.0, -6.0)
+    #glTranslatef(x, y, z)
+    gluLookAt(x, y, z, 0, 0, 0, 0, 1, 0)
 
     # Draw a triangle
     glBegin(GL_POLYGON)                 # Start drawing a polygon
@@ -34,14 +34,14 @@ def draw_gl_scene():
     glEnd()                             # We are done with the polygon
 
     # Move Right 3.0 units.
-    glTranslatef(3.0, 0.0, 0.0)
+    #glTranslatef(3.0, 0.0, 0.0)
 
     # Draw a square (quadrilateral)
     glBegin(GL_QUADS)                   # Start drawing a 4 sided polygon
-    glVertex3f(-1.0, 1.0, 0.0)          # Top Left
-    glVertex3f(1.0, 1.0, 0.0)           # Top Right
-    glVertex3f(1.0, -1.0, 0.0)          # Bottom Right
-    glVertex3f(-1.0, -1.0, 0.0)         # Bottom Left
+    glVertex3f(2, 1.0, 0.0)          # Top Left
+    glVertex3f(4, 1.0, 0.0)           # Top Right
+    glVertex3f(4, -1.0, 0.0)          # Bottom Right
+    glVertex3f(2, -1.0, 0.0)         # Bottom Left
     glEnd()                             # We are done with the polygon
     
     
@@ -59,15 +59,35 @@ class World(pyglet.window.Window):
     def __init__(self):
         config = Config(sample_buffers=1, samples=4, depth_size=16, double_buffer=True)
         super(World, self).__init__(700, 500, resizable=True, config=config)
+        self.x = -1.5
+        self.y = 0
+        self.z = -6.0
         init_gl()
 
 
     def on_draw(self):
-        draw_gl_scene()
+        draw_gl_scene(self.x, self.y, self.z)
 
 
     def on_resize(self, w ,h):
         resize_gl(w, h)
+        
+    
+    def on_key_press(self, symbol, modifiers):
+       if symbol == key.UP:
+           self.y += 0.1
+       elif symbol == key.DOWN:
+           self.y -= 0.1
+       elif symbol == key.LEFT:
+           self.x -= 0.1
+       elif symbol == key.RIGHT:
+           self.x += 0.1
+       elif symbol == key.R:
+           self.z += 0.1
+       elif symbol == key.F:
+           self.z -= 0.1
+       elif symbol == key.ESCAPE:
+           self.dispatch_event('on_close')
 
 
 if __name__ == "__main__":
