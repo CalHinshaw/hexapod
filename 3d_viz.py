@@ -1,8 +1,8 @@
-# See original source and C based tutorial at http://nehe.gamedev.net
-
 import pyglet
 from pyglet.gl import *
 from pyglet.window import key
+from math import pi
+from util import *
 
 
 # A general OpenGL initialization function.  Sets all of the initial parameters.
@@ -16,14 +16,14 @@ def init_gl():
 
 
 # The main drawing function.
-def draw_gl_scene(x, y, z):
+def draw_gl_scene(pos, yaw, pitch):
     # Clear The Screen And The Depth Buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     
     # Set perspective matrix
     glLoadIdentity()
-    gluLookAt(x, y, z, 0, 0, 0, 0, 1, 0)
-
+    gluLookAt(*(pos + add(pos, unit_vec(yaw, pitch)) + (0, 1, 0)))
+    
     # Draw some stuff
     glBegin(GL_POLYGON)
     glVertex3f(0.0, 1.0, 0.0)
@@ -61,11 +61,13 @@ class World(pyglet.window.Window):
         self.x = 0
         self.y = 0
         self.z = -6.0
+        self.yaw = 0
+        self.pitch = 0
         init_gl()
 
 
     def on_draw(self):
-        draw_gl_scene(self.x, self.y, self.z)
+        draw_gl_scene((self.x, self.y, self.z), self.yaw, self.pitch)
 
 
     def on_resize(self, w ,h):
@@ -87,14 +89,26 @@ class World(pyglet.window.Window):
            self.z -= 0.1
        elif symbol == key.ESCAPE:
            self.dispatch_event('on_close')
+    
+    
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        if dx != 0:
+            self.yaw += (dx*pi)/(self.width*2.0)
+        
+        if dy != 0:
+            self.pitch += (dy*pi)/(self.height*2.0)
+        
+        if self.pitch < pi*0.05:
+            self.pitch = pi*0.05
+        elif self.pitch > pi*0.95:
+            self.pitch = pi*0.95
+        
+        print self.pitch
+    
+    
+    #def on_mouse_motion(self, x, y, dx, dy):
 
 
 if __name__ == "__main__":
     window = World()
     pyglet.app.run()
-
-
-
-
-
-

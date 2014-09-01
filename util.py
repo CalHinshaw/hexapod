@@ -1,7 +1,17 @@
 from math import cos, sin
 
+def add(a, b):
+    return tuple(x+y for x, y in zip(a, b))
+
+
 def sub(a, b):
     return tuple(x-y for x,y in zip(a,b))
+
+
+def cross(a, b):
+    return (a[1]*b[2]-b[1]*a[2],
+            b[0]*a[2]-a[0]*b[2],
+            a[0]*b[1]-a[1]*b[0])
 
 
 def rotate(p, angle, c = (0, 0)):
@@ -20,3 +30,20 @@ def robot_to_world(center, angle, p):
 def world_to_robot(center, angle, p):
     rx, ry = rotate(p, -angle, center)
     return (rx-center[0], ry-center[1])
+    
+    
+def unit_vec(yaw, pitch):
+    uv =   (sin(pitch)*sin(yaw),
+            cos(pitch)*cos(yaw),
+            -sin(pitch)*cos(yaw))
+    #print uv
+    #print sum((x**2 for x in uv))**0.5
+    
+    return uv
+    
+    
+    
+    
+    
+    
+    
