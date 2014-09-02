@@ -1,4 +1,4 @@
-from math import cos, sin
+from math import cos, sin, pi
 
 def add(a, b):
     return tuple(x+y for x, y in zip(a, b))
@@ -8,10 +8,18 @@ def sub(a, b):
     return tuple(x-y for x,y in zip(a,b))
 
 
+def scale(scalar, v):
+    return tuple(scalar*x for x in v)
+
+
 def cross(a, b):
     return (a[1]*b[2]-b[1]*a[2],
             b[0]*a[2]-a[0]*b[2],
             a[0]*b[1]-a[1]*b[0])
+
+
+def norm(v):
+    return scale(1.0/sum((x*x for x in v)), v)
 
 
 def rotate(p, angle, c = (0, 0)):
@@ -33,13 +41,11 @@ def world_to_robot(center, angle, p):
     
     
 def unit_vec(yaw, pitch):
-    uv =   (sin(pitch)*sin(yaw),
-            cos(pitch)*cos(yaw),
-            -sin(pitch)*cos(yaw))
-    #print uv
-    #print sum((x**2 for x in uv))**0.5
+    uv = (sin(pitch+pi/2.0)*sin(yaw),
+          cos(pitch+pi/2.0)*cos(yaw),
+          sin(pitch+pi/2.0)*cos(yaw))
     
-    return uv
+    return norm(uv)
     
     
     

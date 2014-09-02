@@ -58,16 +58,19 @@ class World(pyglet.window.Window):
     def __init__(self):
         config = Config(sample_buffers=1, samples=4, depth_size=16, double_buffer=True)
         super(World, self).__init__(700, 500, resizable=True, config=config)
-        self.x = 0
-        self.y = 0
-        self.z = -6.0
+        
+        self.keyboard = pyglet.window.key.KeyStateHandler()
+        self.push_handlers(self.keyboard)
+        
+        self.pos = (0, 0, -6.0)
         self.yaw = 0
         self.pitch = 0
         init_gl()
+        pyglet.clock.schedule_interval(self.update, 1/120.0)
 
 
     def on_draw(self):
-        draw_gl_scene((self.x, self.y, self.z), self.yaw, self.pitch)
+        draw_gl_scene(self.pos, self.yaw, self.pitch)
 
 
     def on_resize(self, w ,h):
@@ -76,17 +79,17 @@ class World(pyglet.window.Window):
     
     def on_key_press(self, symbol, modifiers):
        if symbol == key.UP:
-           self.y += 0.1
+           self.pos[1] += 0.1
        elif symbol == key.DOWN:
-           self.y -= 0.1
+           self.pos[1] -= 0.1
        elif symbol == key.LEFT:
-           self.x -= 0.1
+           self.pos[0] -= 0.1
        elif symbol == key.RIGHT:
-           self.x += 0.1
+           self.pos[0] += 0.1
        elif symbol == key.R:
-           self.z += 0.1
+           self.pos[2] += 0.1
        elif symbol == key.F:
-           self.z -= 0.1
+           self.pos[2] -= 0.1
        elif symbol == key.ESCAPE:
            self.dispatch_event('on_close')
     
@@ -96,17 +99,20 @@ class World(pyglet.window.Window):
             self.yaw += (dx*pi)/(self.width*2.0)
         
         if dy != 0:
-            self.pitch += (dy*pi)/(self.height*2.0)
+            self.pitch += (dy*pi)/(self.width*2.0)
         
-        if self.pitch < pi*0.1:
-            self.pitch = pi*0.1
-        elif self.pitch > pi*0.9:
-            self.pitch = pi*0.9
-        
-        print self.pitch
+        if self.pitch < -(pi/2.0)*0.95:
+            self.pitch = -(pi/2.0)*0.95
+        elif self.pitch > (pi/2.0)*0.95:
+            self.pitch = (pi/2.0)*0.95
     
     
-    #def on_mouse_motion(self, x, y, dx, dy):
+    # Update function called by clock.schedule_interval
+    def update(self, dt):
+        if self.keyboard[key.W]:
+            self.pos = add(self.pos, scale(0.1, unit_vec(self.yaw, self.pitch)))
+        if self.keyboard[key.S]:
+            self.pos = add(self.pos, scale(-0.1, unit_vec(self.yaw, self.pitch)))
 
 
 if __name__ == "__main__":
