@@ -98,10 +98,10 @@ class World(pyglet.window.Window):
         if dy != 0:
             self.pitch += (dy*pi)/(self.height*2.0)
         
-        if self.pitch < pi*0.05:
-            self.pitch = pi*0.05
-        elif self.pitch > pi*0.95:
-            self.pitch = pi*0.95
+        if self.pitch < pi*0.1:
+            self.pitch = pi*0.1
+        elif self.pitch > pi*0.9:
+            self.pitch = pi*0.9
         
         print self.pitch
     
