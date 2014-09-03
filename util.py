@@ -40,7 +40,7 @@ def world_to_robot(center, angle, p):
     return (rx-center[0], ry-center[1])
     
     
-def unit_vec(yaw, pitch):
+def forward_vec(yaw, pitch):
     uv = (sin(pitch+pi/2.0)*sin(yaw),
           cos(pitch+pi/2.0)*cos(yaw),
           sin(pitch+pi/2.0)*cos(yaw))
@@ -48,8 +48,5 @@ def unit_vec(yaw, pitch):
     return norm(uv)
     
     
-    
-    
-    
-    
-    
+def right_vec(yaw, pitch):
+    return cross(forward_vec(yaw, pitch), (0, 1, 0))

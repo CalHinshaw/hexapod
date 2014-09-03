@@ -22,7 +22,7 @@ def draw_gl_scene(pos, yaw, pitch):
     
     # Set perspective matrix
     glLoadIdentity()
-    gluLookAt(*(pos + add(pos, unit_vec(yaw, pitch)) + (0, 1, 0)))
+    gluLookAt(*(pos + add(pos, forward_vec(yaw, pitch)) + (0, 1, 0)))
     
     # Draw some stuff
     glBegin(GL_POLYGON)
@@ -78,41 +78,50 @@ class World(pyglet.window.Window):
         
     
     def on_key_press(self, symbol, modifiers):
-       if symbol == key.UP:
-           self.pos[1] += 0.1
-       elif symbol == key.DOWN:
-           self.pos[1] -= 0.1
-       elif symbol == key.LEFT:
-           self.pos[0] -= 0.1
-       elif symbol == key.RIGHT:
-           self.pos[0] += 0.1
-       elif symbol == key.R:
-           self.pos[2] += 0.1
-       elif symbol == key.F:
-           self.pos[2] -= 0.1
+       if symbol == key.SPACE:
+           self.set_exclusive_mouse(True)
        elif symbol == key.ESCAPE:
            self.dispatch_event('on_close')
     
     
-    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+    def on_key_release(self, symbol, modifiers):
+        if symbol == key.SPACE:
+            self.set_exclusive_mouse(False)
+    
+    
+    def on_mouse_motion(self, x, y, dx, dy):
+        if not self.keyboard[key.SPACE]:
+            return
+            
+        print x, y, dx, dy
+        
         if dx != 0:
-            self.yaw += (dx*pi)/(self.width*2.0)
+            self.yaw -= (dx*pi)/(self.width*2.0)
         
         if dy != 0:
-            self.pitch += (dy*pi)/(self.width*2.0)
+            self.pitch -= (dy*pi)/(self.width*2.0)
         
         if self.pitch < -(pi/2.0)*0.95:
             self.pitch = -(pi/2.0)*0.95
         elif self.pitch > (pi/2.0)*0.95:
             self.pitch = (pi/2.0)*0.95
+            
+        print self.yaw, self.pitch
     
     
     # Update function called by clock.schedule_interval
     def update(self, dt):
         if self.keyboard[key.W]:
-            self.pos = add(self.pos, scale(0.1, unit_vec(self.yaw, self.pitch)))
+            self.pos = add(self.pos, scale(0.1, forward_vec(self.yaw, self.pitch)))
+        
         if self.keyboard[key.S]:
-            self.pos = add(self.pos, scale(-0.1, unit_vec(self.yaw, self.pitch)))
+            self.pos = add(self.pos, scale(-0.1, forward_vec(self.yaw, self.pitch)))
+            
+        if self.keyboard[key.D]:
+            self.pos = add(self.pos, scale(0.1, right_vec(self.yaw, self.pitch)))
+            
+        if self.keyboard[key.A]:
+            self.pos = add(self.pos, scale(-0.1, right_vec(self.yaw, self.pitch)))
 
 
 if __name__ == "__main__":
