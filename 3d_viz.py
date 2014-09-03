@@ -92,21 +92,17 @@ class World(pyglet.window.Window):
     def on_mouse_motion(self, x, y, dx, dy):
         if not self.keyboard[key.SPACE]:
             return
-            
-        print x, y, dx, dy
         
         if dx != 0:
             self.yaw -= (dx*pi)/(self.width*2.0)
         
         if dy != 0:
-            self.pitch -= (dy*pi)/(self.width*2.0)
+            self.pitch += (dy*pi)/(self.width*2.0)
         
         if self.pitch < -(pi/2.0)*0.95:
             self.pitch = -(pi/2.0)*0.95
         elif self.pitch > (pi/2.0)*0.95:
             self.pitch = (pi/2.0)*0.95
-            
-        print self.yaw, self.pitch
     
     
     # Update function called by clock.schedule_interval

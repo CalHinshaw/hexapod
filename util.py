@@ -41,9 +41,9 @@ def world_to_robot(center, angle, p):
     
     
 def forward_vec(yaw, pitch):
-    uv = (sin(pitch+pi/2.0)*sin(yaw),
-          cos(pitch+pi/2.0)*cos(yaw),
-          sin(pitch+pi/2.0)*cos(yaw))
+    uv = (cos(pitch)*sin(yaw),
+          sin(pitch),
+          cos(pitch)*cos(yaw))
     
     return norm(uv)
     
