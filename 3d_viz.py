@@ -7,6 +7,12 @@ from util import *
 C_SPEED = 0.1
 R_SPEED = 1.0
 
+RED    = (1.0, 0.0, 0.0, 1.0)
+GREEN  = (0.0, 1.0, 0.0, 1.0)
+BLUE   = (0.0, 0.0, 1.0, 1.0)
+WHITE  = (1.0, 1.0, 1.0, 1.0)
+LTGREY = (0.5, 0.5, 0.5, 1.0)
+
 # A general OpenGL initialization function.  Sets all of the initial parameters.
 def init_gl(w, h):
     glClearColor(0.0, 0.0, 0.0, 0.0)	    # This Will Clear The Background Color To Black
@@ -46,48 +52,63 @@ def draw_test():
 
 def draw_unit_cube():
     glBegin(GL_QUADS);
-    glVertex3f( -0.5, -0.5, -0.5);
-    glVertex3f( -0.5,  0.5, -0.5);
-    glVertex3f(  0.5,  0.5, -0.5);
-    glVertex3f(  0.5, -0.5, -0.5);
+    glVertex3f( -0.5, -0.5, -0.5)
+    glVertex3f( -0.5,  0.5, -0.5)
+    glVertex3f(  0.5,  0.5, -0.5)
+    glVertex3f(  0.5, -0.5, -0.5)
 
-    glVertex3f(  0.5, -0.5, 0.5 );
-    glVertex3f(  0.5,  0.5, 0.5 );
-    glVertex3f( -0.5,  0.5, 0.5 );
-    glVertex3f( -0.5, -0.5, 0.5 );
+    glVertex3f(  0.5, -0.5, 0.5 )
+    glVertex3f(  0.5,  0.5, 0.5 )
+    glVertex3f( -0.5,  0.5, 0.5 )
+    glVertex3f( -0.5, -0.5, 0.5 )
 
-    glVertex3f( 0.5, -0.5, -0.5 );
-    glVertex3f( 0.5,  0.5, -0.5 );
-    glVertex3f( 0.5,  0.5,  0.5 );
-    glVertex3f( 0.5, -0.5,  0.5 );
+    glVertex3f( 0.5, -0.5, -0.5 )
+    glVertex3f( 0.5,  0.5, -0.5 )
+    glVertex3f( 0.5,  0.5,  0.5 )
+    glVertex3f( 0.5, -0.5,  0.5 )
 
-    glVertex3f( -0.5, -0.5,  0.5 );
-    glVertex3f( -0.5,  0.5,  0.5 );
-    glVertex3f( -0.5,  0.5, -0.5 );
-    glVertex3f( -0.5, -0.5, -0.5 );
+    glVertex3f( -0.5, -0.5,  0.5 )
+    glVertex3f( -0.5,  0.5,  0.5 )
+    glVertex3f( -0.5,  0.5, -0.5 )
+    glVertex3f( -0.5, -0.5, -0.5 )
 
-    glVertex3f(  0.5,  0.5,  0.5 );
-    glVertex3f(  0.5,  0.5, -0.5 );
-    glVertex3f( -0.5,  0.5, -0.5 );
-    glVertex3f( -0.5,  0.5,  0.5 );
+    glVertex3f(  0.5,  0.5,  0.5 )
+    glVertex3f(  0.5,  0.5, -0.5 )
+    glVertex3f( -0.5,  0.5, -0.5 )
+    glVertex3f( -0.5,  0.5,  0.5 )
 
-    glVertex3f(  0.5, -0.5, -0.5 );
-    glVertex3f(  0.5, -0.5,  0.5 );
-    glVertex3f( -0.5, -0.5,  0.5 );
-    glVertex3f( -0.5, -0.5, -0.5 );
+    glVertex3f(  0.5, -0.5, -0.5 )
+    glVertex3f(  0.5, -0.5,  0.5 )
+    glVertex3f( -0.5, -0.5,  0.5 )
+    glVertex3f( -0.5, -0.5, -0.5 )
     glEnd();
 
 
-def draw_box(d, c, a):
-    glPushMatrix()
+def draw_box(d, c, a, color = WHITE):
+    glColor4f(*color)
     
+    glPushMatrix()
     glTranslatef(*c)
     gl_rotate(*a)
     glScalef(*d)
-
     draw_unit_cube()
-    
     glPopMatrix()
+    
+
+def draw_grid(color = LTGREY):
+    glColor4f(*color)
+    
+    glBegin(GL_LINES)
+    for x in range(-20, 21, 4):
+        glVertex3f(x, 0, -20)
+        glVertex3f(x, 0, 20)
+        
+    for z in range(-20, 21, 4):
+        glVertex3f(-20, 0, z)
+        glVertex3f(20, 0, z)
+    
+    glEnd()
+    
     
     
 def resize_gl(w, h):
@@ -110,7 +131,7 @@ class World(pyglet.window.Window):
         
         self.robot = {"body": (4, 2, 8)}
         
-        self.r_center = [0, 0, 0]
+        self.r_center = [0, 2.5, 0]
         self.r_angles = [0, 0, 0]
         
         self.pos = (0, 5, -20.0)
@@ -127,8 +148,8 @@ class World(pyglet.window.Window):
         glLoadIdentity()
         gluLookAt(*(self.pos + add(self.pos, forward_vec(self.yaw, self.pitch)) + (0, 1, 0)))
         
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         draw_box(self.robot["body"], self.r_center, self.r_angles)
+        draw_grid()
 
 
     def on_resize(self, w ,h):
