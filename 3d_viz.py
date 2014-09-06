@@ -6,7 +6,7 @@ from util import *
 
 
 # A general OpenGL initialization function.  Sets all of the initial parameters.
-def init_gl():
+def init_gl(w, h):
     glClearColor(0.0, 0.0, 0.0, 0.0)	    # This Will Clear The Background Color To Black
     glClearDepth(1.0)					    # Enables Clearing Of The Depth Buffer
     glDepthFunc(GL_LESS)				    # The Type Of Depth Test To Do
@@ -14,17 +14,12 @@ def init_gl():
     glShadeModel(GL_SMOOTH)			   	    # Enables Smooth Color Shading
     glMatrixMode(GL_MODELVIEW)
 
-# Our test scene
-def draw_gl_scene(pos, yaw, pitch):
-    # Clear The Screen And The Depth Buffer
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    
-    # Set perspective matrix
-    glLoadIdentity()
-    gluLookAt(*(pos + add(pos, forward_vec(yaw, pitch)) + (0, 1, 0)))
-    
-    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE )
-    draw_unit_cube()
+
+
+def gl_rotate(x_ang, y_ang, z_ang):
+    glRotatef(x_ang, 1.0, 0.0, 0.0)
+    glRotatef(y_ang, 0.0, 1.0, 0.0)
+    glRotatef(z_ang, 0.0, 0.0, 1.0)
 
 
 def draw_test():
@@ -83,7 +78,15 @@ def draw_unit_cube():
 
 
 def draw_box(d, c, a):
-    pass
+    glPushMatrix()
+    
+    glTranslatef(*c)
+    gl_rotate(*a)
+    glScalef(*d)
+
+    draw_unit_cube()
+    
+    glPopMatrix()
     
     
 def resize_gl(w, h):
@@ -104,20 +107,29 @@ class World(pyglet.window.Window):
         self.keyboard = pyglet.window.key.KeyStateHandler()
         self.push_handlers(self.keyboard)
         
-        self.robot = {"body": (100, 50, 200)}
+        self.robot = {"body": (4, 2, 8)}
         
-        self.r_center = (0, 0, 0)
-        self.r_angles = (0, 0, 0)
+        self.r_center = [0, 0, 0]
+        self.r_angles = [0, 0, 0]
         
-        self.pos = (0, 0, -6.0)
+        self.pos = (0, 5, -20.0)
         self.yaw = 0
         self.pitch = 0
-        init_gl()
+        
+        self.test = 0
+        
+        init_gl(self.width, self.height)
         pyglet.clock.schedule_interval(self.update, 1/120.0)
 
 
     def on_draw(self):
-        draw_gl_scene(self.pos, self.yaw, self.pitch)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        
+        glLoadIdentity()
+        gluLookAt(*(self.pos + add(self.pos, forward_vec(self.yaw, self.pitch)) + (0, 1, 0)))
+        
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+        draw_box(self.robot["body"], self.r_center, self.r_angles)
 
 
     def on_resize(self, w ,h):
@@ -165,6 +177,9 @@ class World(pyglet.window.Window):
             
         if self.keyboard[key.A]:
             self.pos = add(self.pos, scale(-0.1, right_vec(self.yaw, self.pitch)))
+            
+        if self.keyboard[key.R]:
+            self.test += 0.5
 
 
 if __name__ == "__main__":
