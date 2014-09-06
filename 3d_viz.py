@@ -4,6 +4,8 @@ from pyglet.window import key
 from math import pi
 from util import *
 
+C_SPEED = 0.1
+R_SPEED = 1.0
 
 # A general OpenGL initialization function.  Sets all of the initial parameters.
 def init_gl(w, h):
@@ -13,7 +15,6 @@ def init_gl(w, h):
     glEnable(GL_DEPTH_TEST)			    	# Enables Depth Testing
     glShadeModel(GL_SMOOTH)			   	    # Enables Smooth Color Shading
     glMatrixMode(GL_MODELVIEW)
-
 
 
 def gl_rotate(x_ang, y_ang, z_ang):
@@ -116,8 +117,6 @@ class World(pyglet.window.Window):
         self.yaw = 0
         self.pitch = 0
         
-        self.test = 0
-        
         init_gl(self.width, self.height)
         pyglet.clock.schedule_interval(self.update, 1/120.0)
 
@@ -166,20 +165,37 @@ class World(pyglet.window.Window):
     
     # Update function called by clock.schedule_interval
     def update(self, dt):
+        # Move camera
         if self.keyboard[key.W]:
-            self.pos = add(self.pos, scale(0.1, forward_vec(self.yaw, self.pitch)))
+            self.pos = add(self.pos, scale(C_SPEED, forward_vec(self.yaw, self.pitch)))
         
         if self.keyboard[key.S]:
-            self.pos = add(self.pos, scale(-0.1, forward_vec(self.yaw, self.pitch)))
+            self.pos = add(self.pos, scale(-C_SPEED, forward_vec(self.yaw, self.pitch)))
             
         if self.keyboard[key.D]:
-            self.pos = add(self.pos, scale(0.1, right_vec(self.yaw, self.pitch)))
+            self.pos = add(self.pos, scale(C_SPEED, right_vec(self.yaw, self.pitch)))
             
         if self.keyboard[key.A]:
-            self.pos = add(self.pos, scale(-0.1, right_vec(self.yaw, self.pitch)))
+            self.pos = add(self.pos, scale(-C_SPEED, right_vec(self.yaw, self.pitch)))
+        
+        # Rotate robot body
+        if self.keyboard[key.NUM_5]:
+            self.r_angles[0] -= R_SPEED
             
-        if self.keyboard[key.R]:
-            self.test += 0.5
+        if self.keyboard[key.NUM_2]:
+            self.r_angles[0] += R_SPEED
+        
+        if self.keyboard[key.NUM_1]:
+            self.r_angles[2] -= R_SPEED
+            
+        if self.keyboard[key.NUM_3]:
+            self.r_angles[2] += R_SPEED
+        
+        if self.keyboard[key.NUM_4]:
+            self.r_angles[1] -= R_SPEED
+            
+        if self.keyboard[key.NUM_6]:
+            self.r_angles[1] += R_SPEED
 
 
 if __name__ == "__main__":
