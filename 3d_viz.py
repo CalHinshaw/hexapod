@@ -14,8 +14,7 @@ def init_gl():
     glShadeModel(GL_SMOOTH)			   	    # Enables Smooth Color Shading
     glMatrixMode(GL_MODELVIEW)
 
-
-# The main drawing function.
+# Our test scene
 def draw_gl_scene(pos, yaw, pitch):
     # Clear The Screen And The Depth Buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -24,6 +23,11 @@ def draw_gl_scene(pos, yaw, pitch):
     glLoadIdentity()
     gluLookAt(*(pos + add(pos, forward_vec(yaw, pitch)) + (0, 1, 0)))
     
+    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE )
+    draw_unit_cube()
+
+
+def draw_test():
     # Draw some stuff
     glBegin(GL_POLYGON)
     glVertex3f(0.0, 1.0, 0.0)
@@ -42,6 +46,44 @@ def draw_gl_scene(pos, yaw, pitch):
     glVertex3f(-1, 2, 0)
     glVertex3f(-1, 0, 0)
     glEnd()
+
+
+def draw_unit_cube():
+    glBegin(GL_QUADS);
+    glVertex3f( -0.5, -0.5, -0.5);
+    glVertex3f( -0.5,  0.5, -0.5);
+    glVertex3f(  0.5,  0.5, -0.5);
+    glVertex3f(  0.5, -0.5, -0.5);
+
+    glVertex3f(  0.5, -0.5, 0.5 );
+    glVertex3f(  0.5,  0.5, 0.5 );
+    glVertex3f( -0.5,  0.5, 0.5 );
+    glVertex3f( -0.5, -0.5, 0.5 );
+
+    glVertex3f( 0.5, -0.5, -0.5 );
+    glVertex3f( 0.5,  0.5, -0.5 );
+    glVertex3f( 0.5,  0.5,  0.5 );
+    glVertex3f( 0.5, -0.5,  0.5 );
+
+    glVertex3f( -0.5, -0.5,  0.5 );
+    glVertex3f( -0.5,  0.5,  0.5 );
+    glVertex3f( -0.5,  0.5, -0.5 );
+    glVertex3f( -0.5, -0.5, -0.5 );
+
+    glVertex3f(  0.5,  0.5,  0.5 );
+    glVertex3f(  0.5,  0.5, -0.5 );
+    glVertex3f( -0.5,  0.5, -0.5 );
+    glVertex3f( -0.5,  0.5,  0.5 );
+
+    glVertex3f(  0.5, -0.5, -0.5 );
+    glVertex3f(  0.5, -0.5,  0.5 );
+    glVertex3f( -0.5, -0.5,  0.5 );
+    glVertex3f( -0.5, -0.5, -0.5 );
+    glEnd();
+
+
+def draw_box(d, c, a):
+    pass
     
     
 def resize_gl(w, h):
@@ -61,6 +103,11 @@ class World(pyglet.window.Window):
         
         self.keyboard = pyglet.window.key.KeyStateHandler()
         self.push_handlers(self.keyboard)
+        
+        self.robot = {"body": (100, 50, 200)}
+        
+        self.r_center = (0, 0, 0)
+        self.r_angles = (0, 0, 0)
         
         self.pos = (0, 0, -6.0)
         self.yaw = 0
