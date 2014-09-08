@@ -124,7 +124,30 @@ def draw_grid(color = LTGREY):
         glVertex3f(20, 0, z)
     
     glEnd()
-    
+
+
+def draw_line(start, finish, color=WHITE, width=4):
+    glColor4f(*color)
+    glLineWidth(width)
+    glBegin(GL_LINES)
+    glVertex3f(*start)
+    glVertex3f(*finish)
+    glEnd()
+
+
+def draw_actuator(act, angles, mount):
+   '''mount is in global coordinates, not robot'''
+   horiz_ang, vert_ang = 0, 0    # Used to rotate the (0, 0, 1) vector
+   pos = mount
+   for seg, angs in zip(act, angles):
+       horiz_ang += angs[1]
+       vert_ang += angs[2]
+       new_pos = add(pos,
+                     scale(seg["len"],
+                           forward_vec(horiz_ang, vert_ang)))
+       
+       draw_line(pos, new_pos, BLUE)
+       pos = new_pos
     
     
 def resize_gl(w, h):
@@ -145,7 +168,10 @@ class World(pyglet.window.Window):
         self.keyboard = pyglet.window.key.KeyStateHandler()
         self.push_handlers(self.keyboard)
         
-        self.robot = {"body": (4, 2, 8)}
+        self.robot = {"body": (4, 2, 8),
+                      "actuators": [[{"mount": (2, 1, 3.5), "axis": (0, 1, 0), "len": 0.5},
+                                     {"axis": (0, 0, 1), "len": 3},
+                                     {"axis": (0, 0, 1), "len": 3}]]}
         
         self.r_center = [0, 2.5, 0]
         self.r_angles = [0, 0, 0]
@@ -165,6 +191,8 @@ class World(pyglet.window.Window):
         gluLookAt(*(self.pos + add(self.pos, forward_vec(self.yaw, self.pitch)) + (0, 1, 0)))
         
         draw_box(self.robot["body"], self.r_center, self.r_angles)
+        angles = ((0, pi/3, 0), (0, 0, pi/4), (0, 0, -pi/2))
+        draw_actuator(self.robot["actuators"][0], angles, (3, 3, 3))
         draw_grid()
 
 
