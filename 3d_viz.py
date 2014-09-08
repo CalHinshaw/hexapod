@@ -84,19 +84,35 @@ def draw_unit_cube():
     glEnd();
 
 
-def draw_box(d, c, a, color = WHITE):
-    glColor4f(*color)
+def draw_box(d, c, a, face_color = WHITE, edge_color = BLUE):
+    '''d is the dimensions of the box
+       c is the center of the box
+       a is the angles the box is rotated around'''
     
     glPushMatrix()
+    
     glTranslatef(*c)
     gl_rotate(*a)
     glScalef(*d)
+    
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+    glColor4f(*face_color)
     draw_unit_cube()
+    
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+    glLineWidth(3)
+    glEnable(GL_POLYGON_OFFSET_LINE);
+    glPolygonOffset(-1, -1);
+    glColor4f(*edge_color)
+    draw_unit_cube()
+    glDisable(GL_POLYGON_OFFSET_LINE)
+    
     glPopMatrix()
     
 
 def draw_grid(color = LTGREY):
     glColor4f(*color)
+    glLineWidth(2)
     
     glBegin(GL_LINES)
     for x in range(-20, 21, 4):
