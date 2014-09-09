@@ -81,12 +81,16 @@ def rotate(p, angle, c = (0, 0)):
            (p[0]-c[0])*sin(angle) + (p[1]-c[1])*cos(angle)+c[1]
 
 
-def robot_to_world(center, angle, p):
+def robot_to_world(p, center, angles):
     """p is the point we're converting in the robot's coordinate system
        center is the robot's center of rotation in the world's coordinate system
-       angle is the robot's angle of rotation in the world's coordinate system"""
-    rx, ry = rotate(p, angle)
-    return (center[0]+rx, center[1]+ry)
+       angles are the robot's angles of rotation around the x, y, and z axies in
+       the world's coordinate system"""
+    return mvec(multm(transm(*center),
+                      rotm((1, 0, 0), angles[0]),
+                      rotm((0, 1, 0), angles[1]),
+                      rotm((0, 0, 1), angles[2]),
+                      vecm(*p)))
 
 
 def world_to_robot(center, angle, p):
