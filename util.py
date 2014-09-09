@@ -26,6 +26,52 @@ def cross(a, b):
             a[0]*b[1]-a[1]*b[0])
 
 
+def vecm(*vec):
+    return tuple((x, ) for x in vec) + ((1,),)
+
+
+def mvec(m):
+    return tuple(x[0] for x in m[0:len(m)-1])
+
+
+def rotm(axis, angle):
+    c, s = cos(angle), sin(angle)
+    x, y, z = axis
+    return ((c+x*x*(1-c),   x*y*(1-c)-z*s, x*z*(1-c)+y*s, 0),
+            (y*x*(1-c)+z*s, c+y*y*(1-c),   y*z*(1-c)-x*s, 0),
+            (z*x*(1-c)-y*s, z*y*(1-c)+x*s, c+z*z*(1-c),   0),
+            (0,             0,             0,             1))
+
+
+def transm(x, y, z):
+    return ((1, 0, 0, x),
+            (0, 1, 0, y),
+            (0, 0, 1, z),
+            (0, 0, 0, 1))
+
+
+def multm_cell(a, row, b, col):
+    c = 0
+    for i in range(len(b)):
+        c += a[row][i] * b[i][col]
+    return c
+
+
+def mult2m(a, b):
+    return tuple(tuple(multm_cell(a, row, b, col) for col in range(len(b[0])))
+                 for row in range(len(a)))
+
+
+def multm(*args):
+    if len(args) == 1:
+        return args[0]
+    elif len(args) == 2:
+        return mult2m(*args)
+    else:
+        return mult2m(multm(*args[0:len(args)/2]),
+                      multm(*args[len(args)/2:len(args)]))
+
+
 def norm(v):
     return scale(1.0/sum((x*x for x in v)), v)
 
