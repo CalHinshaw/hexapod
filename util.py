@@ -1,5 +1,13 @@
 from math import cos, sin, pi
 
+def to_rad(angle):
+    return angle * 0.0174532925
+    
+
+def to_deg(angle):
+    return angle * 57.2957795
+    
+    
 def add(a, b):
     return tuple(x+y for x, y in zip(a, b))
 
