@@ -4,7 +4,7 @@ from pyglet.window import key
 from math import pi
 from util import *
 
-C_SPEED = 0.1
+C_SPEED = 0.25
 R_SPEED = 0.03
 
 RED    = (1.0, 0.0, 0.0, 1.0)
@@ -137,7 +137,7 @@ def draw_line(start, finish, color=WHITE, width=4):
 
 def draw_actuator(act, joint_angles, mount, body_angles):
    '''mount is in global coordinates, not robot'''
-   horiz_ang, vert_ang = 0, 0    # Used to rotate the (0, 0, 1) vector
+   horiz_ang, vert_ang = pi/2.0, 0    # Used to rotate the (0, 0, 1) vector
    pos = (0, 0, 0)
    for seg, angs in zip(act, joint_angles):
        horiz_ang += angs[1]
@@ -193,7 +193,7 @@ class World(pyglet.window.Window):
         gluLookAt(*(self.pos + add(self.pos, forward_vec(self.yaw, self.pitch)) + (0, 1, 0)))
         
         draw_box(self.robot["body"], self.r_center, map(to_deg, self.r_angles))
-        angles = ((0, pi/2, 0), (0, 0, pi/4), (0, 0, -pi/2))
+        angles = ((0, 0, 0), (0, 0, pi/4), (0, 0, -pi/2))
         draw_actuator(self.robot["actuators"][0],
                       angles,
                       robot_to_world(self.robot["actuators"][0][0]["mount"],
