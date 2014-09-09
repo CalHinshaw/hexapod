@@ -1,4 +1,5 @@
 from math import cos, sin, pi
+import numpy as np
 
 def to_rad(angle):
     return angle * 0.0174532925
@@ -27,49 +28,29 @@ def cross(a, b):
 
 
 def vecm(*vec):
-    return tuple((x, ) for x in vec) + ((1,),)
+    return np.matrix("; ".join(str(x) for x in vec) + "; 1")
 
 
-def mvec(m):
-    return tuple(x[0] for x in m[0:len(m)-1])
+def mvec(matrix):
+    """Convert a numpy column vector with x, y, z, 1 values to a python tuple
+       of the form (x, y, z). The one is stripped."""
+    return tuple(matrix.getA1())[0:3]
 
 
 def rotm(axis, angle):
     c, s = cos(angle), sin(angle)
     x, y, z = axis
-    return ((c+x*x*(1-c),   x*y*(1-c)-z*s, x*z*(1-c)+y*s, 0),
-            (y*x*(1-c)+z*s, c+y*y*(1-c),   y*z*(1-c)-x*s, 0),
-            (z*x*(1-c)-y*s, z*y*(1-c)+x*s, c+z*z*(1-c),   0),
-            (0,             0,             0,             1))
+    return np.matrix(((c+x*x*(1-c),   x*y*(1-c)-z*s, x*z*(1-c)+y*s, 0),
+                      (y*x*(1-c)+z*s, c+y*y*(1-c),   y*z*(1-c)-x*s, 0),
+                      (z*x*(1-c)-y*s, z*y*(1-c)+x*s, c+z*z*(1-c),   0),
+                      (0,             0,             0,             1)))
 
 
 def transm(x, y, z):
-    return ((1, 0, 0, x),
-            (0, 1, 0, y),
-            (0, 0, 1, z),
-            (0, 0, 0, 1))
-
-
-def multm_cell(a, row, b, col):
-    c = 0
-    for i in range(len(b)):
-        c += a[row][i] * b[i][col]
-    return c
-
-
-def mult2m(a, b):
-    return tuple(tuple(multm_cell(a, row, b, col) for col in range(len(b[0])))
-                 for row in range(len(a)))
-
-
-def multm(*args):
-    if len(args) == 1:
-        return args[0]
-    elif len(args) == 2:
-        return mult2m(*args)
-    else:
-        return mult2m(multm(*args[0:len(args)/2]),
-                      multm(*args[len(args)/2:len(args)]))
+    return np.matrix(((1, 0, 0, x),
+                      (0, 1, 0, y),
+                      (0, 0, 1, z),
+                      (0, 0, 0, 1)))
 
 
 def norm(v):
@@ -86,11 +67,11 @@ def robot_to_world(p, center, angles):
        center is the robot's center of rotation in the world's coordinate system
        angles are the robot's angles of rotation around the x, y, and z axies in
        the world's coordinate system"""
-    return mvec(multm(transm(*center),
-                      rotm((1, 0, 0), angles[0]),
-                      rotm((0, 1, 0), angles[1]),
-                      rotm((0, 0, 1), angles[2]),
-                      vecm(*p)))
+    return mvec(transm(*center) *
+                rotm((1, 0, 0), angles[0]) *
+                rotm((0, 1, 0), angles[1]) *
+                rotm((0, 0, 1), angles[2]) *
+                vecm(*p))
 
 
 def world_to_robot(center, angle, p):
