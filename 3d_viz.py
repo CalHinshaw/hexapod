@@ -5,7 +5,7 @@ from math import pi
 from util import *
 
 C_SPEED = 0.1
-R_SPEED = 1.0
+R_SPEED = 0.03
 
 RED    = (1.0, 0.0, 0.0, 1.0)
 GREEN  = (0.0, 1.0, 0.0, 1.0)
@@ -169,7 +169,7 @@ class World(pyglet.window.Window):
         self.push_handlers(self.keyboard)
         
         self.robot = {"body": (4, 2, 8),
-                      "actuators": [[{"mount": (2, 1, 3.5), "axis": (0, 1, 0), "len": 0.5},
+                      "actuators": [[{"mount": (2, 0, 3.5), "axis": (0, 1, 0), "len": 0.5},
                                      {"axis": (0, 0, 1), "len": 3},
                                      {"axis": (0, 0, 1), "len": 3}]]}
         
@@ -190,9 +190,14 @@ class World(pyglet.window.Window):
         glLoadIdentity()
         gluLookAt(*(self.pos + add(self.pos, forward_vec(self.yaw, self.pitch)) + (0, 1, 0)))
         
-        draw_box(self.robot["body"], self.r_center, self.r_angles)
-        angles = ((0, pi/3, 0), (0, 0, pi/4), (0, 0, -pi/2))
-        draw_actuator(self.robot["actuators"][0], angles, (3, 3, 3))
+        draw_box(self.robot["body"], self.r_center, map(to_deg, self.r_angles))
+        angles = ((0, pi/2, 0), (0, 0, pi/4), (0, 0, -pi/2))
+        draw_actuator(self.robot["actuators"][0],
+                      angles,
+                      robot_to_world(self.robot["actuators"][0][0]["mount"],
+                                     self.r_center,
+                                     self.r_angles))
+        
         draw_grid()
 
 
