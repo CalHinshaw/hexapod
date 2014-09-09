@@ -135,18 +135,20 @@ def draw_line(start, finish, color=WHITE, width=4):
     glEnd()
 
 
-def draw_actuator(act, angles, mount):
+def draw_actuator(act, joint_angles, mount, body_angles):
    '''mount is in global coordinates, not robot'''
    horiz_ang, vert_ang = 0, 0    # Used to rotate the (0, 0, 1) vector
-   pos = mount
-   for seg, angs in zip(act, angles):
+   pos = (0, 0, 0)
+   for seg, angs in zip(act, joint_angles):
        horiz_ang += angs[1]
        vert_ang += angs[2]
        new_pos = add(pos,
                      scale(seg["len"],
                            forward_vec(horiz_ang, vert_ang)))
        
-       draw_line(pos, new_pos, BLUE)
+       draw_line(robot_to_world(pos, mount, body_angles),
+                 robot_to_world(new_pos, mount, body_angles),
+                 BLUE)
        pos = new_pos
     
     
@@ -196,7 +198,8 @@ class World(pyglet.window.Window):
                       angles,
                       robot_to_world(self.robot["actuators"][0][0]["mount"],
                                      self.r_center,
-                                     self.r_angles))
+                                     self.r_angles),
+                      self.r_angles)
         
         draw_grid()
 
