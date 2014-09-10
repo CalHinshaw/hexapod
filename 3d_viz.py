@@ -51,40 +51,16 @@ def draw_targets(targets):
         glPopMatrix()
 
     
-class World(pyglet.window.Window):
-    def __init__(self):
+class RobotVisualizer(pyglet.window.Window):
+    def __init__(self, robot_spec, init_targets):
         config = Config(sample_buffers=1, samples=4, depth_size=16, double_buffer=True)
-        super(World, self).__init__(700, 500, resizable=True, config=config)
+        super(RobotVisualizer, self).__init__(700, 500, resizable=True, config=config)
         
         self.keyboard = pyglet.window.key.KeyStateHandler()
         self.push_handlers(self.keyboard)
         
-        self.robot = {"body": (4, 2, 8),
-                      "actuators": [[{"mount": (2, 0, 3.5), "axis": (0, 1, 0), "len": 0.5},
-                                     {"axis": (0, 0, 1), "len": 3},
-                                     {"axis": (0, 0, 1), "len": 3}],
-                                    [{"mount": (2, 0, 0), "axis": (0, 1, 0), "len": 0.5},
-                                     {"axis": (0, 0, 1), "len": 3},
-                                     {"axis": (0, 0, 1), "len": 3}],
-                                    [{"mount": (2, 0, -3.5), "axis": (0, 1, 0), "len": 0.5},
-                                     {"axis": (0, 0, 1), "len": 3},
-                                     {"axis": (0, 0, 1), "len": 3}],
-                                    [{"mount": (-2, 0, 3.5), "axis": (0, 1, 0), "len": 0.5},
-                                     {"axis": (0, 0, 1), "len": 3},
-                                     {"axis": (0, 0, 1), "len": 3}],
-                                    [{"mount": (-2, 0, 0), "axis": (0, 1, 0), "len": 0.5},
-                                     {"axis": (0, 0, 1), "len": 3},
-                                     {"axis": (0, 0, 1), "len": 3}],
-                                    [{"mount": (-2, 0, -3.5), "axis": (0, 1, 0), "len": 0.5},
-                                     {"axis": (0, 0, 1), "len": 3},
-                                     {"axis": (0, 0, 1), "len": 3}]]}
-        
-        self.targets = [(4,  0, 3.5),
-                        (4,  0, 0),
-                        (4,  0, -3.5),
-                        (-4, 0, 3.5),
-                        (-4, 0, 0),
-                        (-4, 0, -3.5)]
+        self.robot = robot_spec
+        self.targets = init_targets
         
         self.r_center = [0, 2.5, 0]
         self.r_angles = [0, 0, 0]
@@ -175,5 +151,32 @@ class World(pyglet.window.Window):
 
 
 if __name__ == "__main__":
-    window = World()
+    robot = {"body": (4, 2, 8),
+             "actuators": [[{"mount": (2, 0, 3.5), "axis": (0, 1, 0), "len": 0.5},
+                            {"axis": (0, 0, 1), "len": 3},
+                            {"axis": (0, 0, 1), "len": 3}],
+                           [{"mount": (2, 0, 0), "axis": (0, 1, 0), "len": 0.5},
+                            {"axis": (0, 0, 1), "len": 3},
+                            {"axis": (0, 0, 1), "len": 3}],
+                           [{"mount": (2, 0, -3.5), "axis": (0, 1, 0), "len": 0.5},
+                            {"axis": (0, 0, 1), "len": 3},
+                            {"axis": (0, 0, 1), "len": 3}],
+                           [{"mount": (-2, 0, 3.5), "axis": (0, 1, 0), "len": 0.5},
+                            {"axis": (0, 0, 1), "len": 3},
+                            {"axis": (0, 0, 1), "len": 3}],
+                           [{"mount": (-2, 0, 0), "axis": (0, 1, 0), "len": 0.5},
+                            {"axis": (0, 0, 1), "len": 3},
+                            {"axis": (0, 0, 1), "len": 3}],
+                           [{"mount": (-2, 0, -3.5), "axis": (0, 1, 0), "len": 0.5},
+                            {"axis": (0, 0, 1), "len": 3},
+                            {"axis": (0, 0, 1), "len": 3}]]}
+                            
+    targets = [(4,  0, 3.5),
+               (4,  0, 0),
+               (4,  0, -3.5),
+               (-4, 0, 3.5),
+               (-4, 0, 0),
+               (-4, 0, -3.5)]
+
+    window = RobotVisualizer(robot, targets)
     pyglet.app.run()
