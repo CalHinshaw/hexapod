@@ -72,11 +72,6 @@ def robot_to_world(p, center, angles):
                 rotm((0, 1, 0), angles[1]) *
                 rotm((0, 0, 1), angles[2]) *
                 vecm(*p))
-
-
-def world_to_robot(center, angle, p):
-    rx, ry = rotate(p, -angle, center)
-    return (rx-center[0], ry-center[1])
     
     
 def forward_vec(yaw, pitch):
