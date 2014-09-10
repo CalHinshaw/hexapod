@@ -137,7 +137,7 @@ def draw_line(start, finish, color=WHITE, width=4):
 
 def draw_actuator(act, joint_angles, mount, body_angles):
    '''mount is in global coordinates, not robot'''
-   horiz_ang, vert_ang = pi/2.0, 0    # Used to rotate the (0, 0, 1) vector
+   horiz_ang, vert_ang = 0, 0    # Used to rotate the (0, 0, 1) vector
    pos = (0, 0, 0)
    for seg, angs in zip(act, joint_angles):
        horiz_ang += angs[1]
@@ -173,6 +173,21 @@ class World(pyglet.window.Window):
         self.robot = {"body": (4, 2, 8),
                       "actuators": [[{"mount": (2, 0, 3.5), "axis": (0, 1, 0), "len": 0.5},
                                      {"axis": (0, 0, 1), "len": 3},
+                                     {"axis": (0, 0, 1), "len": 3}],
+                                    [{"mount": (2, 0, 0), "axis": (0, 1, 0), "len": 0.5},
+                                     {"axis": (0, 0, 1), "len": 3},
+                                     {"axis": (0, 0, 1), "len": 3}],
+                                    [{"mount": (2, 0, -3.5), "axis": (0, 1, 0), "len": 0.5},
+                                     {"axis": (0, 0, 1), "len": 3},
+                                     {"axis": (0, 0, 1), "len": 3}],
+                                    [{"mount": (-2, 0, 3.5), "axis": (0, 1, 0), "len": 0.5},
+                                     {"axis": (0, 0, 1), "len": 3},
+                                     {"axis": (0, 0, 1), "len": 3}],
+                                    [{"mount": (-2, 0, 0), "axis": (0, 1, 0), "len": 0.5},
+                                     {"axis": (0, 0, 1), "len": 3},
+                                     {"axis": (0, 0, 1), "len": 3}],
+                                    [{"mount": (-2, 0, -3.5), "axis": (0, 1, 0), "len": 0.5},
+                                     {"axis": (0, 0, 1), "len": 3},
                                      {"axis": (0, 0, 1), "len": 3}]]}
         
         self.r_center = [0, 2.5, 0]
@@ -193,13 +208,15 @@ class World(pyglet.window.Window):
         gluLookAt(*(self.pos + add(self.pos, forward_vec(self.yaw, self.pitch)) + (0, 1, 0)))
         
         draw_box(self.robot["body"], self.r_center, map(to_deg, self.r_angles))
-        angles = ((0, 0, 0), (0, 0, pi/4), (0, 0, -pi/2))
-        draw_actuator(self.robot["actuators"][0],
-                      angles,
-                      robot_to_world(self.robot["actuators"][0][0]["mount"],
-                                     self.r_center,
-                                     self.r_angles),
-                      self.r_angles)
+        angles = ((0, pi/2, 0), (0, 0, pi/4), (0, 0, -pi/2))
+        
+        for actuator in self.robot["actuators"]:
+            draw_actuator(actuator,
+                          angles,
+                          robot_to_world(actuator[0]["mount"],
+                                         self.r_center,
+                                         self.r_angles),
+                          self.r_angles)
         
         draw_grid()
 
