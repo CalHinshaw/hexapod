@@ -150,7 +150,19 @@ def draw_actuator(act, joint_angles, mount, body_angles):
                  robot_to_world(new_pos, mount, body_angles),
                  BLUE)
        pos = new_pos
+
+
+def draw_robot(robot, r_center, r_angles):
+    draw_box(robot["body"], r_center, map(to_deg, r_angles))
+    angles = ((0, pi/2, 0), (0, 0, pi/4), (0, 0, -pi/2))
     
+    for actuator in robot["actuators"]:
+        draw_actuator(actuator,
+                      angles,
+                      robot_to_world(actuator[0]["mount"],
+                                     r_center,
+                                     r_angles),
+                      r_angles)
     
 def resize_gl(w, h):
     if h == 0:
@@ -206,18 +218,7 @@ class World(pyglet.window.Window):
         
         glLoadIdentity()
         gluLookAt(*(self.pos + add(self.pos, forward_vec(self.yaw, self.pitch)) + (0, 1, 0)))
-        
-        draw_box(self.robot["body"], self.r_center, map(to_deg, self.r_angles))
-        angles = ((0, pi/2, 0), (0, 0, pi/4), (0, 0, -pi/2))
-        
-        for actuator in self.robot["actuators"]:
-            draw_actuator(actuator,
-                          angles,
-                          robot_to_world(actuator[0]["mount"],
-                                         self.r_center,
-                                         self.r_angles),
-                          self.r_angles)
-        
+        draw_robot(self.robot, self.r_center, self.r_angles)
         draw_grid()
 
 
