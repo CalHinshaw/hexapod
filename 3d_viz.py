@@ -165,6 +165,19 @@ def draw_robot(robot, r_center, r_angles):
                       r_angles)
 
 
+def draw_targets(targets):
+    glColor4f(*RED)
+    glLineWidth(3)
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+    
+    for target in targets:
+        glPushMatrix()
+        glTranslatef(*target)
+        glScalef(0.25, 0.25, 0.25)
+        draw_unit_cube()
+        glPopMatrix()
+
+
 def resize_gl(w, h):
     if h == 0:
         h = 1
@@ -203,6 +216,13 @@ class World(pyglet.window.Window):
                                      {"axis": (0, 0, 1), "len": 3},
                                      {"axis": (0, 0, 1), "len": 3}]]}
         
+        self.targets = [(4,  0, 3.5),
+                        (4,  0, 0),
+                        (4,  0, -3.5),
+                        (-4, 0, 3.5),
+                        (-4, 0, 0),
+                        (-4, 0, -3.5)]
+        
         self.r_center = [0, 2.5, 0]
         self.r_angles = [0, 0, 0]
         
@@ -220,6 +240,7 @@ class World(pyglet.window.Window):
         glLoadIdentity()
         gluLookAt(*(self.pos + add(self.pos, forward_vec(self.yaw, self.pitch)) + (0, 1, 0)))
         draw_robot(self.robot, self.r_center, self.r_angles)
+        draw_targets(self.targets)
         draw_grid()
 
 
