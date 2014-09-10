@@ -169,7 +169,6 @@ def draw_targets(targets):
     glColor4f(*RED)
     glLineWidth(3)
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-    
     for target in targets:
         glPushMatrix()
         glTranslatef(*target)
