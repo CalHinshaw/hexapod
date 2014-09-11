@@ -69,6 +69,8 @@ class RobotVisualizer(pyglet.window.Window):
         self.yaw = 0
         self.pitch = 0
         
+        self.grabbed_target = None
+        
         init_gl(self.width, self.height)
         pyglet.clock.schedule_interval(self.update, 1/120.0)
 
@@ -113,6 +115,30 @@ class RobotVisualizer(pyglet.window.Window):
             self.pitch = -(pi/2.0)*0.95
         elif self.pitch > (pi/2.0)*0.95:
             self.pitch = (pi/2.0)*0.95
+
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        # calculate the ray
+        dx, dy = dx - self.width, dy - self.width
+        yaw = self.yaw - (dx*pi)/(self.width*2.0)
+        pitch = self.pitch + (dy*pi)/(self.width*2.0)
+        ray = forward_vec(yaw, pitch)
+        
+        # look for intersections with the list of targets
+        
+        
+        # grab the target
+    
+    
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        # if we're grabbing a target calculate the ray
+        # calc intersections with the ground
+        # move the target
+    
+    
+    def on_mouse_release(self, x, y, button, modifiers):
+        # release the target
+        self.grabbed_target = None
     
     
     # Update function called by clock.schedule_interval
